@@ -1,6 +1,6 @@
 # MD Management Studio
 
-A contact management app (.NET 10 API + Angular on Azure) that I rebuilt with AI-assisted development and then hardened. The point was to show how I run AI in an engineering workflow with guardrails, not just a demo that works.
+A contact management app (.NET 10 API + Angular on Azure) that I rebuilt with AI-assisted development (Claude Code) and then hardened. The point was to show how I run AI in an engineering workflow with guardrails, not just a demo that works.
 
 [![Secret scan (gitleaks)](https://github.com/mldanello/md-management-studio/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/mldanello/md-management-studio/actions/workflows/gitleaks.yml)
 [![E2E (live smoke)](https://github.com/mldanello/md-management-studio/actions/workflows/e2e.yml/badge.svg)](https://github.com/mldanello/md-management-studio/actions/workflows/e2e.yml)
@@ -73,13 +73,13 @@ This project was rebuilt with AI-assisted development, under a simple rule:
 
 > **AI suggests, a separate AI reviews, and I decide and merge.**
 
-My workflow is that every change goes through a pull request: one AI session writes the change, a different session reviews it, and I read both, decide, and merge. Guardrails like gitleaks and the E2E suite exist so that speed doesn't cost safety.
+Every change goes through a pull request. I work with Claude Code in VS Code to write the change, a separate Claude session reviews the finished work against the plan, and I read both, decide, and merge. Guardrails like gitleaks and the E2E suite exist so that speed doesn't cost safety.
 
 ## Project history
 
 - **v1 (about three years ago).** The first version, built by hand without AI, with a simpler UI.
-- **v2.0.** Rebuilt with AI-assisted development. MVP first: a live demo with no real data, putting a working product ahead of polish.
-- **v2.1 (this repo).** Hardening. I audited the git history, found more than I expected, and rotated or disabled every credential I found. I switched Azure SQL to Entra-only auth, replaced the demo password with a passwordless demo login, and added gitleaks and Playwright E2E to CI. Then I started this fresh public repo with clean history; the earlier history stays private.
+- **v2.0.** Rebuilt with AI-assisted development: Claude Code for writing, and a separate Claude session for review. MVP first: a live demo with no real data, putting a working product ahead of polish.
+- **v2.1 (this repo).** Hardening. I audited the git history, found more than I expected (old JWT signing keys, a database password in a dev config, and AI-generated deployment notes with real keys pasted in), and rotated or disabled every credential I found. I switched Azure SQL to Entra-only auth, replaced the demo password with a passwordless demo login, and added gitleaks and Playwright E2E to CI. Then I started this fresh public repo with clean history; the earlier history stays private.
 
 ## Run it locally
 
