@@ -1,0 +1,50 @@
+{
+  "tenantId": 1,
+  "firstName": "Jane",
+  "middleName": "A.",
+  "lastName": "Doe",
+  "companyName": "Example Co",
+  "email": "jane.doe@example.com",
+  "web": "https://example.com",
+  "notes": "Sample contact created for Postman tests.",
+  "isActive": true,
+  "createdAt": "2024-01-01T12:00:00Z",
+  "modifiedAt": "2024-01-01T12:00:00Z",
+  "contactAddresses": [
+    {
+      "street1": "123 Main St",
+      "street2": "Apt 4B",
+      "city": "Anytown",
+      "county": "AnyCounty",
+      "state": "NY",
+      "zip": "12345",
+      "isActive": true,
+      "createdAt": "2024-01-01T12:00:00Z",
+      "modifiedAt": "2024-01-01T12:00:00Z"
+    }
+  ],
+  "contactPhones": [
+    {
+      "number": "+1-555-123-4567",
+      "type": "Mobile",
+      "isPrimary": true,
+      "isActive": true,
+      "createdAt": "2024-01-01T12:00:00Z",
+      "modifiedAt": "2024-01-01T12:00:00Z"
+    }
+  ],
+  "contactSearchTags": [
+    {
+      "tagText": "client",
+      "isActive": true,
+      "createdAt": "2024-01-01T12:00:00Z",
+      "modifiedAt": "2024-01-01T12:00:00Z"
+    },
+    {
+      "tagText": "priority-high",
+      "isActive": true,
+      "createdAt": "2024-01-01T12:00:00Z",
+      "modifiedAt": "2024-01-01T12:00:00Z"
+    }
+  ]
+}

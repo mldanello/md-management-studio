@@ -1,0 +1,77 @@
+<section class="page-card page-contacts-wide">
+  @if (allowResponsiveDebug && showResponsiveDebug()) {
+    <div class="responsive-debug-badge" aria-hidden="true"></div>
+  }
+  <div class="contacts-layout">
+    <app-contact-list-component
+      [contacts]="contacts()"
+      [selectedContactId]="selectedContactId()"
+      (selectContact)="onListSelect($event)"
+      (editContact)="onListEdit($event)"
+      (deleteContact)="onListDelete($event)"
+      (createContact)="onListCreate()"
+      (clearSelection)="onListClearSelection()">
+    </app-contact-list-component>
+
+    <div class="contact-detail">
+      <h2>{{ selectedContact().id > 0 ? (editing() ? 'Edit Contact' : 'Contact Details') : 'Add Contact' }}</h2>
+
+      <div class="contact-detail-scroll">
+
+      @if (loadingDetail()) {
+        <p class="info-message">Loading contact details...</p>
+      }
+
+      @if (!loadingDetail() && selectedContact().id > 0 && !editing()) {
+        <div class="contact-detail-read-layout">
+          <app-contact-detail
+            [contact]="selectedContact()"
+            [displaySearchTags]="displaySearchTags()"
+            (editContact)="goToEditMode()"
+            (deleteContact)="confirmDelete(selectedContact().id, selectedContact().firstName + ' ' + selectedContact().lastName)">
+          </app-contact-detail>
+          <app-communication-display
+            [addresses]="selectedContact().contactAddresses"
+            [phones]="selectedContact().contactPhones">
+          </app-communication-display>
+          <div class="contact-detail-read-actions-vertical" aria-label="Contact actions">
+            <button class="primary" type="button" (click)="goToEditMode()">Edit</button>
+            <button
+              class="danger"
+              type="button"
+              (click)="confirmDelete(selectedContact().id, selectedContact().firstName + ' ' + selectedContact().lastName)">
+              Delete
+            </button>
+          </div>
+        </div>
+      } @else if (!loadingDetail()) {
+        <app-contact-edit
+          [contact]="selectedContact()"
+          [activeEditTab]="activeEditTab()"
+          [profileDirty]="profileDirty()"
+          [communicationDirty]="communicationDirty()"
+          [saving]="saving()"
+          [noFilterResults]="noFilterResults()"
+          [addresses]="communicationDraft().addresses"
+          [phones]="communicationDraft().phones"
+          [addressDialogOpen]="addressDialogOpen()"
+          [addressDialogMode]="addressDialogMode()"
+          [addressDialogForm]="addressDialogForm()"
+          [phoneDialogOpen]="phoneDialogOpen()"
+          [phoneDialogMode]="phoneDialogMode()"
+          [phoneDialogForm]="phoneDialogForm()"
+          (uiAction)="onContactEditUiAction($event)"
+          (editAction)="onContactEditAction($event)">
+        </app-contact-edit>
+      }
+
+      @if (message()) {
+        <p class="info-message">{{ message() }}</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+      </div>
+    </div>
+  </div>
+</section>

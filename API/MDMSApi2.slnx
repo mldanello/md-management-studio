@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MDMSApi2/MDMSApi2.csproj" />
+  <Project Path="MDMSApi2Tests/MDMSApi2Tests.csproj" />
+</Solution>

@@ -1,0 +1,46 @@
+name: Secret scan (gitleaks)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:        # adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitleaks-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned release + checksum so a tampered download fails the build instead of running.
+  # To upgrade: bump the version and copy the linux_x64 line from that release's checksums.txt.
+  GITLEAKS_VERSION: 8.28.0
+  GITLEAKS_SHA256: a65b5253807a68ac0cafa4414031fd740aeb55f54fb7e55f386acb52e6a840eb
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # full history, so a secret added and then deleted in a later commit is still caught
+
+      # Uses the free gitleaks CLI rather than gitleaks-action (which needs a license key for org-owned repos).
+      - name: Install gitleaks
+        run: |
+          curl -sSfL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo mv gitleaks /usr/local/bin/
+          gitleaks version
+
+      # Scans every commit using the default rules plus the custom ones in .gitleaks.toml.
+      # Reviewed findings listed in .gitleaksignore (repo root) are skipped automatically.
+      # Any new finding exits non-zero, which fails this job. --redact keeps secret values out of the public log.
+      - name: Scan git history
+        run: gitleaks git --config .gitleaks.toml --redact --verbose --exit-code 1 .

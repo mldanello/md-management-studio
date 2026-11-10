@@ -1,0 +1,30 @@
+# Custom gitleaks config. Keeps every built-in rule and adds rules for secrets
+# the defaults miss. CI loads this file explicitly (see .github/workflows/gitleaks.yml).
+title = "MDMS gitleaks config"
+
+[extend]
+useDefault = true
+
+# The default rules don't look inside SQL connection strings, so a real
+# "User ID=...;Password=..." pair (e.g. in appsettings.json or an az CLI
+# example) went unflagged. This rule matches a connection string (it must name a
+# server/data source) and reports the Password / Pwd value as the secret.
+[[rules]]
+id = "sql-connection-string-password"
+description = "Password inside a SQL connection string"
+regex = '''(?i)(?:server|data source|address|addr|network address)\s*=[^"'\n]*?;[^"'\n]*?\b(?:password|pwd)\s*=\s*([^;"'\s]+)'''
+secretGroup = 1
+keywords = ["password=", "pwd="]
+
+  # Skip obvious placeholders so docs and templates don't fail the build:
+  # {pwd}, <password>, ${VAR}, $(VAR), %VAR%, ****, and words like "your_password".
+  [[rules.allowlists]]
+  regexTarget = "secret"
+  regexes = [
+    '''^\{.*\}$''',
+    '''^<.*>$''',
+    '''^\$[\{\(]''',
+    '''^%.*%$''',
+    '''^\*+$''',
+    '''(?i)^(?:your|my|the|enter|insert|replace|placeholder|changeme|password|secret|xxx|\.\.\.)''',
+  ]

@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+dist/
+out-tsc/
+.angular/
+coverage/
+.idea/
+.vscode/
+*.log
+!src/environments/environment.ts
+!src/environments/environment.prod.ts
+src/environments/*.local.ts
+Prompts.txt
+angular-ui-posix.zip

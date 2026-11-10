@@ -1,0 +1,27 @@
+<div class="app-shell">
+  <header class="app-header">
+    <nav class="app-nav">
+      <span class="app-title">MD Management Studio</span>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/contacts" routerLinkActive="active">Contacts</a>
+      @if (authService.isAuthenticated()) {
+        <button class="nav-action" type="button" (click)="logout()">Logout</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active">Login</a>
+      }
+      @if (allowLayoutDebug) {
+        <button
+          class="nav-action nav-debug-toggle"
+          type="button"
+          (click)="toggleLayoutDebug()"
+          [attr.aria-pressed]="showLayoutDebug()"
+          [attr.aria-label]="showLayoutDebug() ? 'Disable layout debug mode' : 'Enable layout debug mode'">
+          {{ showLayoutDebug() ? 'Layout Debug: On' : 'Layout Debug: Off' }}
+        </button>
+      }
+    </nav>
+  </header>
+  <main class="app-container">
+    <router-outlet></router-outlet>
+  </main>
+</div>
