@@ -118,7 +118,7 @@ function serveIndex(res) {
 
 function getVersionInfo() {
   const fallback = {
-    appName: 'angular-ai-contacts',
+    appName: 'md-management-studio',
     appVersion: 'unknown',
     buildTimestampUtc: serverStartedAtUtc,
     gitCommit: null,

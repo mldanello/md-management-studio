@@ -4,7 +4,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$defaultDistRoot = Join-Path $PSScriptRoot '..\dist\angular-ai-contacts\browser'
+$defaultDistRoot = Join-Path $PSScriptRoot '..\dist\md-management-studio\browser'
 if (-not $DistRoot) {
 	$DistRoot = $defaultDistRoot
 }
