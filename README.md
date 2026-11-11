@@ -33,7 +33,7 @@ flowchart LR
 
 | Layer | What's used |
 |---|---|
-| **API** | .NET 10, ASP.NET Core Minimal APIs (route groups per feature), EF Core 10 (SQL Server provider, retry on transient failures), repository pattern, JWT bearer auth, Swagger/OpenAPI, Serilog |
+| **API** | .NET 10, ASP.NET Core Minimal APIs (route groups per feature), EF Core 10 (SQL Server provider, retry on transient failures), JWT bearer auth, Swagger/OpenAPI, Serilog. Handlers use the DbContext directly today; moving data access behind repositories is on the roadmap. |
 | **UI** | Angular 22 standalone components with signals, Angular Material, an HTTP interceptor that attaches the token, and a route guard that handles expired sessions |
 | **Data** | Azure SQL. The API connects with its managed identity (`Authentication=Active Directory Default`), so there is no database password anywhere in config. |
 | **Hosting** | Two Azure App Services: one for the API, one for the UI (a small Node server for the SPA that serves `/__version`). |
@@ -110,6 +110,7 @@ The schema and sample data scripts are in `Database/`. A Docker-based local SQL 
 ## Roadmap
 
 - [ ] Local SQL Server in Docker (docker compose) with schema and seed scripts, so development never touches the live database
+- [ ] Move data access behind repositories so endpoint handlers stay thin and testable
 - [ ] Unit tests and API integration tests (`WebApplicationFactory`)
 - [ ] Playwright CRUD tests against a local or ephemeral environment
 - [ ] A PR gate on an ephemeral environment
