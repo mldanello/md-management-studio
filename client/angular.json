@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "",
   "projects": {
-    "angular-ai-contacts": {
+    "md-management-studio": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/angular-ai-contacts",
+            "outputPath": "dist/md-management-studio",
             "browser": "src/main.ts",
             "index": "src/index.html",
             "polyfills": [],
@@ -45,7 +45,7 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "angular-ai-contacts:build",
+            "buildTarget": "md-management-studio:build",
             "proxyConfig": "proxy.conf.json"
           }
         },
