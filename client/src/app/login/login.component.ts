@@ -43,7 +43,7 @@ export class LoginComponent {
     this.authError.set('');
     this.loading.set(true);
     if (this.authDebugEnabled) {
-      console.log('[LoginComponent] login:submit', { username: this.username });
+      console.log('[LoginComponent] login:submit');
     }
 
     try {
