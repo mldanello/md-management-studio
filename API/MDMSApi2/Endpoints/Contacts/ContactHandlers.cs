@@ -68,7 +68,7 @@ public static class ContactHandlers
         db.Contacts.Add(contact);
         await db.SaveChangesAsync();
         log.LogInformation("Created contact id={Id}", contact.Id);
-        return Results.Created($"/contacts/{contact.Id}", contact);
+        return Results.Created($"/contacts/{contact.Id}", contact.ToDetailModel());
     }
 
     public static async Task<IResult> UpdateContactAsync(int id, ContactDetailModel model, ApplicationDbContext db, ILogger<Program> log)
