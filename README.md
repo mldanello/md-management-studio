@@ -2,6 +2,7 @@
 
 A contact management app (.NET 10 API + Angular on Azure) that I rebuilt with AI-assisted development (Claude Code) and then hardened. The point was to show how I run AI in an engineering workflow with guardrails, not just a demo that works.
 
+[![Build & test](https://github.com/mldanello/md-management-studio/actions/workflows/build.yml/badge.svg)](https://github.com/mldanello/md-management-studio/actions/workflows/build.yml)
 [![Secret scan (gitleaks)](https://github.com/mldanello/md-management-studio/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/mldanello/md-management-studio/actions/workflows/gitleaks.yml)
 [![E2E (live smoke)](https://github.com/mldanello/md-management-studio/actions/workflows/e2e.yml/badge.svg)](https://github.com/mldanello/md-management-studio/actions/workflows/e2e.yml)
 ![Version 2.1.0](https://img.shields.io/badge/version-2.1.0-blue)
@@ -36,7 +37,7 @@ flowchart LR
 | **UI** | Angular 22 standalone components with signals, Angular Material, an HTTP interceptor that attaches the token, and a route guard that handles expired sessions |
 | **Data** | Azure SQL. The API connects with its managed identity (`Authentication=Active Directory Default`), so there is no database password anywhere in config. |
 | **Hosting** | Two Azure App Services: one for the API, one for the UI (a small Node server for the SPA that serves `/__version`). |
-| **CI** | GitHub Actions: a gitleaks secret scan on every push and PR, and Playwright E2E smoke tests on push, PR, and a daily schedule. |
+| **CI** | GitHub Actions: build and unit tests for the API and UI (warnings fail the build), a gitleaks secret scan on every push and PR, and Playwright E2E smoke tests on push, PR, and a daily schedule. |
 
 ### Repository layout
 
