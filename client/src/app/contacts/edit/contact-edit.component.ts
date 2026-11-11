@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ContactAddress, ContactDetail, ContactPhone, ContactSearchTag } from '../../models/contact-detail.model';
-import { ContactSearchTagAddComponent } from '../search-tags/contact-seach-tag-add.component';
+import { ContactSearchTagAddComponent } from '../search-tags/contact-search-tag-add.component';
 import { CommunicationEditComponent } from '../communication/edit/communication-edit.component';
 import { DialogMode as AddressDialogMode } from '../communication/edit/address-edit.component';
 import { DialogMode as PhoneDialogMode } from '../communication/edit/phone-edit.component';

@@ -9,8 +9,8 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   selector: 'app-contact-search-tag-add',
   imports: [CommonModule, FormsModule, MatIconModule],
-  templateUrl: './contact-seach-tag-add.component.html',
-  styleUrls: ['./contact-seach-tag-add.component.css']
+  templateUrl: './contact-search-tag-add.component.html',
+  styleUrls: ['./contact-search-tag-add.component.css']
 })
 export class ContactSearchTagAddComponent implements OnInit, OnChanges {
   private hostElement = inject(ElementRef<HTMLElement>);
