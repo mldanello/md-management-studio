@@ -39,6 +39,7 @@ public static class ContactHandlers
             .Include(c => c.ContactAddresses)
             .Include(c => c.ContactPhones)
             .Include(c => c.ContactSearchTags)
+            .AsSplitQuery()
             .SingleOrDefaultAsync();
 
         if (entity is null)
@@ -65,10 +66,12 @@ public static class ContactHandlers
     {
         log.LogInformation("Updating contact id={Id}", id);
         var existing = await db.Contacts
+            .Where(c => c.Id == id)
             .Include(c => c.ContactAddresses)
             .Include(c => c.ContactPhones)
             .Include(c => c.ContactSearchTags)
-            .SingleOrDefaultAsync(c => c.Id == id);
+            .AsSplitQuery()
+            .SingleOrDefaultAsync();
 
         if (existing is null)
         {
@@ -90,6 +93,7 @@ public static class ContactHandlers
             .Include(c => c.ContactAddresses)
             .Include(c => c.ContactPhones)
             .Include(c => c.ContactSearchTags)
+            .AsSplitQuery()
             .SingleOrDefaultAsync();
 
         if (existing is null) return Results.NotFound();
