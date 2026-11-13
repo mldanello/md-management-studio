@@ -82,12 +82,8 @@ public static class ContactHandlers
 
         if (existing is null)
         {
-            log.LogInformation("Contact id={Id} not found. Creating new.", id);
-            var contact = ContactMappers.CreateFromModel(model);
-            db.Contacts.Add(contact);
-            await db.SaveChangesAsync();
-            log.LogInformation("Created contact id={Id}", contact.Id);
-            return Results.Created($"/contacts/{contact.Id}", contact);
+            log.LogWarning("Contact not found id={Id}", id);
+            return Results.NotFound();
         }
 
         existing.UpdateFromModel(model);
