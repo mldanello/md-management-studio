@@ -8,16 +8,6 @@ namespace MDMSApi2.Endpoints.Contacts;
 
 public static class ContactHandlers
 {
-    public static async Task<IResult> GetContactsAsync(ApplicationDbContext db, ILogger<Program> log)
-    {
-        log.LogInformation("Fetching contact list");
-        var contacts = await db.Contacts
-            .Include(c => c.ContactSearchTags)
-            .ToListAsync();
-        var items = contacts.Select(c => c.ToListModel()).ToList();
-        return Results.Ok(items);
-    }
-
     public static async Task<IResult> GetContactsFilteredAsync(ApplicationDbContext db, ILogger<Program> log, string? filter = null)
     {
         log.LogInformation("Fetching filtered contacts with filter={Filter}", filter);

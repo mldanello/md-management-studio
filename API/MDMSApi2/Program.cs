@@ -32,7 +32,6 @@ catch
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
-    .WriteTo.Console()
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -207,47 +206,5 @@ app.MapTokenRoutes();
 app.MapAppInfoRoutes();
 app.MapContactRoutes();
 app.MapSearchTagRoutes();
-
-// Startup diagnostics: validate authentication registration and list schemes
-try
-{
-    using var scope = app.Services.CreateScope();
-    var prov = scope.ServiceProvider;
-
-    var schemeProvider = prov.GetService<Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider>();
-    if (schemeProvider == null)
-    {
-        app.Logger.LogError("IAuthenticationSchemeProvider is NOT registered. Authentication services may be missing.");
-    }
-    else
-    {
-        var schemes = schemeProvider.GetAllSchemesAsync().GetAwaiter().GetResult();
-        if (schemes == null || !schemes.Any())
-        {
-            app.Logger.LogWarning("No authentication schemes were registered.");
-        }
-        else
-        {
-            foreach (var s in schemes)
-            {
-                app.Logger.LogInformation("Registered authentication scheme: Name='{Name}', DisplayName='{DisplayName}', HandlerType='{HandlerType}'",
-                    s.Name, s.DisplayName ?? string.Empty, s.HandlerType?.FullName ?? string.Empty);
-            }
-        }
-    }
-
-    var authOptions = prov.GetService<Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Authentication.AuthenticationOptions>>()?.Value;
-    if (authOptions != null)
-    {
-        app.Logger.LogInformation("AuthenticationOptions: DefaultAuthenticateScheme='{DefaultAuthenticate}', DefaultChallengeScheme='{DefaultChallenge}', DefaultScheme='{DefaultScheme}'",
-            authOptions.DefaultAuthenticateScheme ?? string.Empty,
-            authOptions.DefaultChallengeScheme ?? string.Empty,
-            authOptions.DefaultScheme ?? string.Empty);
-    }
-}
-catch (Exception ex)
-{
-    app.Logger.LogError(ex, "Exception while performing authentication startup diagnostics");
-}
 
 app.Run();
