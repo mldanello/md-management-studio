@@ -7,5 +7,9 @@ public static class AppInfoRoutes
         app.MapGet("/version", AppInfoHandlers.GetVersion)
             .WithName("GetVersion")
             .AllowAnonymous();
+   
+        app.MapGet("/config", AppInfoHandlers.GetClientConfig)
+            .WithName("GetClientConfig")
+            .AllowAnonymous();
     }
 }

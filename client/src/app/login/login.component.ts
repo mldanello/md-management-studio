@@ -3,6 +3,7 @@ import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ApiService } from '../services/api.service';
 
 @Component({
   standalone: true,
@@ -16,8 +17,10 @@ export class LoginComponent {
   username = '';
   password = '';
   authError = signal('');
+  demoEnabled = signal(false);
   loading = signal(false);
   private route = inject(ActivatedRoute);
+  private api = inject(ApiService);
 
   constructor(private authService: AuthService, private router: Router) {
     if (this.route.snapshot.queryParamMap.get('reason') === 'expired') {
@@ -36,7 +39,10 @@ export class LoginComponent {
         console.log('[LoginComponent] already authenticated, navigating to /contacts');
       }
       this.router.navigate(['/contacts']);
+      return;
     }
+
+    void this.loadClientConfig();
   }
 
   async login(): Promise<void> {
@@ -72,6 +78,16 @@ export class LoginComponent {
       this.authError.set('Demo sign-in is unavailable right now, please try again later.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async loadClientConfig(): Promise<void> {
+    try {
+      const config = await this.api.getClientConfig();
+      this.demoEnabled.set(config.demoEnabled);
+    } catch (err) {
+      // API unreachable: keep the Demo button hidden, but leave a trail
+      console.warn('[LoginComponent] could not load /config; Demo button hidden', err);
     }
   }
 }
