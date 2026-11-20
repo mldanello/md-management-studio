@@ -1,4 +1,7 @@
 using System.Reflection;
+using MDMSApi2.Endpoints.AppInfo.Models;
+using MDMSApi2.Settings;
+using Microsoft.Extensions.Options;
 
 namespace MDMSApi2.Endpoints.AppInfo;
 
@@ -10,4 +13,7 @@ public static class AppInfoHandlers
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown";
 
     public static IResult GetVersion() => Results.Ok(new { appVersion = AppVersion });
+    
+    public static IResult GetClientConfig(IOptions<DemoOptions> demoOptions) =>
+        Results.Ok(new ClientConfigModel(demoOptions.Value.Enabled));
 }

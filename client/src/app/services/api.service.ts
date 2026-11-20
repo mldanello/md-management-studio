@@ -6,6 +6,7 @@ import { ContactList } from '../models/contact-list.model';
 import { ContactDetail, ContactSearchTag } from '../models/contact-detail.model';
 
 import { environment } from '../../environments/environment';
+import { ClientConfig } from '../models/client-config.model';
 
 export interface UiVersionInfo {
   appName: string;
@@ -52,6 +53,10 @@ export class ApiService {
 
   async authenticateDemo(): Promise<AuthToken> {
     return firstValueFrom(this.http.post<AuthToken>(`${this.tokenUrl}/demo`, {}));
+  }
+
+  async getClientConfig(): Promise<ClientConfig> {
+    return firstValueFrom(this.http.get<ClientConfig>(`${this.baseUrl}/config`));
   }
 
   async getUiVersionInfo(): Promise<UiVersionInfo | null> {
