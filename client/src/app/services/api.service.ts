@@ -21,8 +21,6 @@ export interface UiVersionInfo {
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
   private readonly searchTagsCacheTtlMs = 2 * 60 * 1000;
-  private readonly searchTagsRequestTimeoutMs = 1200;
-  private readonly searchTagsRetryDelayMs = 250;
   private searchTagsCache: { value: string[]; expiresAt: number } | null = null;
 
   constructor(private http: HttpClient) {}
@@ -37,14 +35,6 @@ export class ApiService {
 
   get searchTagsUrl(): string {
     return `${this.baseUrl}/searchtags`;
-  }
-
-  get contactSearchTagsUrl(): string {
-    return `${this.baseUrl}/contacts/searchtags`;
-  }
-
-  get contactTagsUrl(): string {
-    return `${this.baseUrl}/contacts/tags`;
   }
 
   async authenticate(username: string, password: string): Promise<AuthToken> {
@@ -104,16 +94,9 @@ export class ApiService {
       return [...cached];
     }
 
-    try {
-      const tags = await this.listSearchTagsFromKnownEndpoints();
-      this.setSearchTagsCache(tags);
-      return [...tags];
-    } catch {
-      const fallbackTags = await this.listSearchTagsFromContacts();
-      const tags = this.toDistinctSortedTags(fallbackTags);
-      this.setSearchTagsCache(tags);
-      return [...tags];
-    }
+    const tags = await firstValueFrom(this.http.get<string[]>(this.searchTagsUrl));
+    this.setSearchTagsCache(tags);
+    return [...tags];
   }
 
   private getValidSearchTagsCache(): string[] | null {
@@ -153,137 +136,12 @@ export class ApiService {
     this.setSearchTagsCache(merged);
   }
 
-  private async listSearchTagsFromContacts(): Promise<string[]> {
-    const contactsPayload = await firstValueFrom(this.http.get<unknown>(this.contactsUrl));
-    const tagsFromListPayload = this.extractSearchTagTexts(contactsPayload);
-    if (tagsFromListPayload.length > 0) {
-      return tagsFromListPayload;
-    }
-
-    const contacts = await this.listContacts();
-    const details = await Promise.allSettled(contacts.map(contact => this.getContact(contact.id)));
-
-    return details
-      .filter(
-        (result): result is PromiseFulfilledResult<ContactDetail> => result.status === 'fulfilled'
-      )
-      .flatMap(result => result.value.contactSearchTags ?? [])
-      .filter(tag => tag.isActive)
-      .map(tag => (tag.tagText ?? '').trim())
-      .filter(tagText => tagText.length > 0);
-  }
-
-  private async listSearchTagsFromKnownEndpoints(): Promise<string[]> {
-    const urls = [this.searchTagsUrl, this.contactSearchTagsUrl, this.contactTagsUrl];
-    let lastError: unknown = null;
-    let sawSuccessfulResponse = false;
-
-    for (const url of urls) {
-      try {
-        const response = await firstValueFrom(
-          this.http.get<unknown>(url).pipe(
-            timeout(this.searchTagsRequestTimeoutMs),
-            retry({ count: 1, delay: () => timer(this.searchTagsRetryDelayMs) })
-          )
-        );
-        sawSuccessfulResponse = true;
-        const tags = this.toDistinctSortedTags(this.extractSearchTagTexts(response));
-        if (tags.length > 0) {
-          return tags;
-        }
-      } catch (error: unknown) {
-        lastError = error;
-      }
-    }
-
-    if (sawSuccessfulResponse) {
-      return [];
-    }
-
-    throw lastError ?? new Error('Unable to load search tag suggestions.');
-  }
-
   private toDistinctSortedTags(tagTexts: string[]): string[] {
     const unique = Array.from(new Set(tagTexts.map(tagText => tagText.toLowerCase())));
     const byKey = new Map(tagTexts.map(tagText => [tagText.toLowerCase(), tagText]));
     return unique
       .map(key => byKey.get(key) ?? key)
       .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-  }
-
-  private extractSearchTagTexts(payload: unknown): string[] {
-    const root = this.unwrapCollectionPayload(payload);
-    const results = this.collectSearchTagTexts(root, new Set<unknown>());
-    return results.filter(tagText => tagText.length > 0);
-  }
-
-  private collectSearchTagTexts(node: unknown, seen: Set<unknown>): string[] {
-    if (node === null || node === undefined) {
-      return [];
-    }
-
-    if (typeof node !== 'object') {
-      return [];
-    }
-
-    if (seen.has(node)) {
-      return [];
-    }
-    seen.add(node);
-
-    if (Array.isArray(node)) {
-      const directStrings = node
-        .filter((item): item is string => typeof item === 'string')
-        .map(item => item.trim())
-        .filter(item => item.length > 0);
-
-      const nestedStrings = node
-        .filter((item): item is object => !!item && typeof item === 'object')
-        .flatMap(item => this.collectSearchTagTexts(item, seen));
-
-      return [...directStrings, ...nestedStrings];
-    }
-
-    const obj = node as Record<string, unknown>;
-    const directTagValues: string[] = [];
-
-    const tagTextValue = obj['tagText'];
-    if (typeof tagTextValue === 'string' && tagTextValue.trim().length > 0) {
-      directTagValues.push(tagTextValue.trim());
-    }
-
-    const tagTextPascalValue = obj['TagText'];
-    if (typeof tagTextPascalValue === 'string' && tagTextPascalValue.trim().length > 0) {
-      directTagValues.push(tagTextPascalValue.trim());
-    }
-
-    const collectionKeys = [
-      'contactSearchTags',
-      'ContactSearchTags',
-      'searchTags',
-      'SearchTags',
-      'tags',
-      'Tags',
-      'items',
-      'Items',
-      'value',
-      'Value',
-      'results',
-      'Results',
-      'data',
-      'Data',
-      '$values'
-    ];
-
-    const nestedTagValues = collectionKeys.flatMap(key => {
-      if (!(key in obj)) {
-        return [];
-      }
-
-      return this.collectSearchTagTexts(obj[key], seen);
-    });
-
-    return [...directTagValues, ...nestedTagValues];
   }
 
   private unwrapCollectionPayload(payload: unknown): unknown {
