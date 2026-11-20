@@ -243,11 +243,12 @@ export class ContactSearchTagAddComponent implements OnInit, OnChanges {
       this.suggestionWarning = '';
       this.hasLoadedSuggestions = true;
       this.ensureSuggestionsIncludeCurrentTags();
-    } catch {
+    } catch (err) {
       this.availableSearchTags = [];
       this.suggestionWarning = 'Search tag suggestions are currently unavailable. You can still type a new tag.';
       this.hasLoadedSuggestions = false;
       this.ensureSuggestionsIncludeCurrentTags();
+      console.warn('[ContactSearchTagAdd] could not load /searchtags; showing current tags only', err);
     } finally {
       this.loadingSuggestions = false;
     }
