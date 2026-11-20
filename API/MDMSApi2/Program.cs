@@ -180,19 +180,23 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
-// Enable Swagger in all environments for API documentation
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+// Swagger only when Swagger:Enabled is true (off when the setting is missing)
+if (app.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MDMS API v1");
-    if (app.Environment.IsDevelopment())
+    // Enable Swagger for API documentation
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
-        c.RoutePrefix = string.Empty; // Serve Swagger UI at app root in Development
-    }
-    // In Production, Swagger UI will be at /swagger
-});
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MDMS API v1");
+        if (app.Environment.IsDevelopment())
+        {
+            c.RoutePrefix = string.Empty; // Serve Swagger UI at app root in Development
+        }
+        // In Production, Swagger UI will be at /swagger
+    });
+}
 
+// Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
 // Ensure authentication middleware runs before authorization
