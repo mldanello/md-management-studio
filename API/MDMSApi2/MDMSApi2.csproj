@@ -30,4 +30,9 @@
     <Folder Include="Repositories\" />
   </ItemGroup>
 
+    <ItemGroup>
+    <!-- Documentation only: never copy to bin or the publish output -->
+    <Content Update="appsettings.Example.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
 </Project>
